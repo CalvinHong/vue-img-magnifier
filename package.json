@@ -1,6 +1,6 @@
 {
   "name": "vue-img-magnifier",
-  "version": "1.0.0-beta",
+  "version": "1.0.0-rc",
   "main": "dist/vue-img-magnifier.js",
   "dependencies": {},
   "devDependencies": {

@@ -154,7 +154,6 @@ export default function (evt, options) {
             lens.appendChild(textWrapper);
         } else if (data[idx].status === 2) {
             const {width, height} = thumb.getBoundingClientRect()
-
             lens.className = 'magnifier-lens magnifier-hidden';
             lens.childNodes.length && lens.removeChild(lens.childNodes[0]);
             lens.style.background = `url(${thumb.src}) no-repeat 0 0 scroll`;

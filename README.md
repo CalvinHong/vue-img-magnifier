@@ -3,7 +3,7 @@
 
 ![](demo.gif)
 
-- 安装
+### 安装
 ```
 npm install --save vue-img-magnifier
 ```
@@ -15,7 +15,7 @@ yarn add vue-img-magnifier
 配置js
 ```
 import Magnifier from 'vue-img-magnifier'
-Vue.use(Magnifier)
+Vue.use(Magnifier, [options])
 ```
 配置css
 ```
@@ -30,7 +30,7 @@ import 'vue-img-magnifier/style.css'
 ```jsx
 <template>
     <div>
-        <div class="magnifier-thumb-wrapper" v-magnifier>
+        <div class="magnifier-thumb-wrapper" v-magnifier="options">
             <img :src="img" class="img" :data-large-img-url="img"/>
         </div>
         <div @click="changeImg">change img</div>
@@ -45,6 +45,9 @@ export default {
              "https://lowvelder.co.za/wp-content/uploads/sites/44/2017/12/desert-2340326_960_7_15745.jpg"
           ],
           active: 0,
+          options: {
+              // magnifier options
+          }
         }
     },
     computed:{
@@ -61,3 +64,11 @@ export default {
 </script>
 
 ```
+
+### options相关配置项
+
+| 属性名 | 默认值 | 说明 |
+|--------|--------|------|
+|   width     |     0   |   预览框的宽度，不设置高度，自动按照小图的比例计算高度   |
+|    height    |    0    |  预览框的高度，不设置宽度，自动按照小图的比例计算宽度    |
+|   autoSize     |    0    |   width和height同时不设置时，按照autoSize的倍数计算宽高   |
