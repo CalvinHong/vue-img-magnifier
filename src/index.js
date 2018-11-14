@@ -17,40 +17,29 @@ export default {
             if(!$img.id) {
               $img.id = `magnifier_${lastId++}`
             }
-            const {width, height} = $img.getBoundingClientRect()
-            const $preview = document.createElement('div')
-            $preview.id = `magnifier_preview_${lastPreviewId++}`
-            $preview.className = 'magnifier-preview'
-            $preview.style.width = `${width * opts.previewZoom}px`
-            $preview.style.height = `${height * opts.previewZoom}px`
-
-            el.appendChild($preview)
-            vnode.context.$magifier = new Magnifier(new Event())
-            vnode.context.$magifier.attach({
-              thumb: `#${$img.id}`,
-              largeWrapper: $preview.id,
-              large: binding.value
-            })
-            // const {preview, img} = binding.value
-            // if(!preview || !img) {
-            //   console.warn(`preview、img参数必传`)
-            // }else{
-            //   const $preview = vnode.context.$refs[preview]
-            //   if(!$preview) {
-            //     console.warn(`preview node not found!`)
-            //   }else{
-            //     $preview.classList.add('magnifier-preview')
-            //     if(!$preview.id) {
-            //       $preview.id = `magnifier_preview_${lastPreviewId++}`
-            //     }
-            //     vnode.context.$magifier = new Magnifier(new Event())
-            //     vnode.context.$magifier.attach({
-            //       thumb: `#${$img.id}`,
-            //       largeWrapper: $preview.id,
-            //       large: img
-            //     })
-            //   }
-            // }
+            const isLoaded = $img.complete && $img.naturalHeight !== 0
+            const attach = ()=>{
+              const {width, height} = $img.getBoundingClientRect()
+              const $preview = document.createElement('div')
+              $preview.id = `magnifier_preview_${lastPreviewId++}`
+              $preview.className = 'magnifier-preview'
+              $preview.style.width = `${width * opts.previewZoom}px`
+              $preview.style.height = `${height * opts.previewZoom}px`
+  
+              el.appendChild($preview)
+              vnode.context.$magifier = new Magnifier(new Event())
+              vnode.context.$magifier.attach({
+                thumb: `#${$img.id}`,
+                largeWrapper: $preview.id,
+                large: binding.value
+              })
+              $img.removeEventListener('load', attach)
+            }
+            if(isLoaded) {
+              attach()
+            }else{
+              $img.addEventListener('load', attach)
+            }
           }
           
       }
