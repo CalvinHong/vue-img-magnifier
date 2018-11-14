@@ -1,13 +1,12 @@
 {
-  "name": "vue-magnifier",
-  "version": "0.0.1",
-  "main": "dist/vue-magnifier.js",
-  "dependencies": {
-    "@babel/plugin-external-helpers": "^7.0.0"
-  },
+  "name": "nuxt-magnifier",
+  "version": "1.0.0-alpha",
+  "main": "dist/nuxt-magnifier.js",
+  "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.1.5",
     "@babel/preset-env": "^7.1.5",
+    "@babel/plugin-external-helpers": "^7.0.0",
     "eslint-plugin-prettier": "^3.0.0",
     "prettier": "^1.15.2",
     "rollup": "^0.67.0",
