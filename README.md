@@ -71,4 +71,4 @@ export default {
 |--------|--------|------|
 |   width     |     0   |   预览框的宽度，不设置高度，自动按照小图的比例计算高度   |
 |    height    |    0    |  预览框的高度，不设置宽度，自动按照小图的比例计算宽度    |
-|   autoSize     |    0    |   width和height同时不设置时，按照autoSize的倍数计算宽高   |
+|   autoSize     |    2    |   width和height同时不设置时，按照autoSize的倍数计算宽高   |
