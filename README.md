@@ -1,27 +1,27 @@
-# nuxt-magnifier 图片放大镜
+# vue-img-magnifier 图片放大镜
 支持Vue2.0+, 支持Nuxt.js
 
 - 安装
 ```
-npm install --save nuxt-magnifier
+npm install --save vue-img-magnifier
 ```
 or
 ```
-yarn add nuxt-magnifier
+yarn add vue-img-magnifier
 ```
 
 配置js
 ```
-import Magnifier from 'nuxt-magnifier'
+import Magnifier from 'vue-img-magnifier'
 Vue.use(Magnifier)
 ```
 配置css
 ```
-@import '~nuxt-magnifier/style.css'
+@import '~vue-img-magnifier/style.css'
 ```
 or
 ```
-import 'nuxt-magnifier/style.css'
+import 'vue-img-magnifier/style.css'
 ```
 
 使用非常简单，在img容器写上指令 `v-magnifier`, 然后给img绑定data-large-img-url大图地址即可

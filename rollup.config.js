@@ -8,7 +8,7 @@ export default [
 	{
 		input: 'src/index.js',
 		output: {
-			file: 'dist/nuxt-magnifier.js',
+			file: 'dist/vue-img-magnifier.js',
 			format: 'cjs'
 		},
 		plugins: [

@@ -1,7 +1,7 @@
 {
-  "name": "nuxt-magnifier",
+  "name": "vue-img-magnifier",
   "version": "1.0.0-alpha",
-  "main": "dist/nuxt-magnifier.js",
+  "main": "dist/vue-img-magnifier.js",
   "dependencies": {},
   "devDependencies": {
     "@babel/core": "^7.1.5",
