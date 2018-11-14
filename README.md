@@ -1,6 +1,8 @@
 # vue-img-magnifier 图片放大镜
 支持Vue2.0+, 支持Nuxt.js
 
+![](demo.gif)
+
 - 安装
 ```
 npm install --save vue-img-magnifier
