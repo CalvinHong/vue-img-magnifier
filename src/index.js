@@ -64,6 +64,9 @@ export default {
             }
           }
           
+      },
+      unbind(el, binding, vnode){
+        vnode.context.$magifier && vnode.context.$magifier.destory()
       }
     })
   }

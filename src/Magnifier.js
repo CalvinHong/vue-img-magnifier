@@ -541,9 +541,14 @@ export default function (evt, options) {
             }
         }, false);
 
-        evt.attach('mousemove', thumb, (e, src) => {
+        evt.attach('mousemove', thumb.parentNode, (e, src) => {
             isOverThumb = 1;
         });
+
+        evt.attach('mouseout', thumb.parentNode, () => {
+            isOverThumb = 0;
+            onThumbLeave()
+        })
 
         evt.attach('load', thumbObj, () => {
             data[idx].status = 1;
@@ -574,27 +579,28 @@ export default function (evt, options) {
             }
         })
     };
-
-    evt.attach('mousemove', document, e => {
-        pos.x = e.clientX;
-        pos.y = e.clientY;
-
-        getMousePos();
-
-        if (inBounds === true) {
-            move();
-        } else {
-            if (isOverThumb !== 0) {
-                onThumbLeave();
+    const bindDocumentMouseMove = e => {
+        requestAnimationFrame(()=>{
+            if(!isOverThumb) return;
+            pos.x = e.clientX;
+            pos.y = e.clientY;
+    
+            getMousePos();
+    
+            if (inBounds === true) {
+                move();
             }
+        })
+    }
+    evt.attach('mousemove', document, bindDocumentMouseMove, false);
 
-            isOverThumb = 0;
-        }
-    }, false);
+    this.destory = ()=>{
+        evt.detach('mousemove', document, bindDocumentMouseMove)
+    }
 
-    evt.attach('scroll', window, () => {
-        if (curThumb !== null) {
-            setThumbData(curThumb, curData);
-        }
-    });
+    // evt.attach('scroll', window, () => {
+    //     if (curThumb !== null) {
+    //         setThumbData(curThumb, curData);
+    //     }
+    // });
 };
