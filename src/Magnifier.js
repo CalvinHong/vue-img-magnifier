@@ -144,7 +144,6 @@ export default function (evt, options) {
     const updateLensOnLoad = (idx, thumb, large, largeWrapper) => {
         const lens = $(`#${idx}-lens`);
         let textWrapper = null;
-    
         if (data[idx].status === 1) {
             textWrapper = document.createElement('div');
             textWrapper.className = 'magnifier-loader-text';
@@ -188,7 +187,6 @@ export default function (evt, options) {
         )
             ? false
             : true;
-
         l = xPos - (curData.lensW / 2);
         t = yPos - (curData.lensH / 2);
 
@@ -200,16 +198,19 @@ export default function (evt, options) {
             if (yPos < curData.lensH / 2) {
                 t = 0;
             }
+            // console.log(xPos, curData.w , curData.lensW / 2)
+            // if (xPos - curData.w + (curData.lensW / 2) > 0) {
+            //     l = curData.w - (curData.lensW + 2);
+            // }
+            // console.log(l, curData.w - curData.lensW)
+            l = Math.min(l, curData.w - curData.lensW)
 
-            if (xPos - curData.w + (curData.lensW / 2) > 0) {
-                l = curData.w - (curData.lensW + 2);
-            }
-
-            if (yPos - curData.h + (curData.lensH / 2) > 0) {
-                t = curData.h - (curData.lensH + 2);
-            }
+            // if (yPos - curData.h + (curData.lensH / 2) > 0) {
+            //     t = curData.h - (curData.lensH + 2);
+            // }
+            t = Math.min(t, curData.h - curData.lensH)
         }
-
+        // console.log(curData.offsetLeft)
         pos.l = Math.round(l);
         pos.t = Math.round(t);
 
@@ -284,7 +285,7 @@ export default function (evt, options) {
 
         if (curData.status === 2) {
             curLens.className = 'magnifier-lens';
-
+            curLens.style.pointerEvents = 'none';
             if (curData.zoomAttached === false) {
                 if (curData.zoomable !== undefined && curData.zoomable === true) {
                     evt.attach('mousewheel', curLens, zoomInOut);
@@ -348,8 +349,8 @@ export default function (evt, options) {
                 curLarge.style.top = `-${curData.largeT}px`;
             }
 
-            curLens.style.left = `${pos.l+1}px`;
-            curLens.style.top = `${pos.t+1}px`;
+            curLens.style.left = `${pos.l+1+curData.offsetLeft}px`;
+            curLens.style.top = `${pos.t+1+curData.offsetTop}px`;
             curLens.style.backgroundPosition = `-${curData.lensBgX}px -${curData.lensBgY}px`;
 
             const handler = curData.onthumbmove;
@@ -370,13 +371,21 @@ export default function (evt, options) {
 
     const setThumbData = (thumb, thumbData) => {
         const thumbBounds = thumb.getBoundingClientRect();
+        const largeWrapperBounds = $('#'+thumbData.largeWrapperId).getBoundingClientRect();
         let w = 0;
         let h = 0;
 
         thumbData.x = thumbBounds.left;
         thumbData.y = thumbBounds.top;
-        thumbData.w = Math.round(thumbBounds.right - thumbData.x);
-        thumbData.h = Math.round(thumbBounds.bottom - thumbData.y);
+        thumbData.w = thumbBounds.width;
+        thumbData.h = thumbBounds.height;
+        // thumbData.w = Math.round(thumbBounds.right - thumbData.x);
+        // thumbData.h = Math.round(thumbBounds.bottom - thumbData.y);
+        thumbData.largeWrapperW = largeWrapperBounds.width;
+        thumbData.largeWrapperH = largeWrapperBounds.height;
+        // console.log(thumb.offsetLeft)
+        thumbData.offsetLeft = thumb.offsetLeft
+        thumbData.offsetTop = thumb.offsetTop
 
         thumbData.lensW = Math.round(thumbData.w / thumbData.zoom);
         thumbData.lensH = Math.round(thumbData.h / thumbData.zoom);
@@ -438,6 +447,8 @@ export default function (evt, options) {
             $(`#${thumb.getAttribute('data-large-img-wrapper')}`) ||
             $(`#${curData.largeWrapperId}`)
         );
+
+        curData.largeWrapper = largeWrapper
 
         const zoom = options.zoom || thumb.getAttribute('data-zoom') || gZoom;
         const zoomMin = options.zoomMin || thumb.getAttribute('data-zoom-min') || gZoomMin;
@@ -510,15 +521,18 @@ export default function (evt, options) {
             onthumbmove
         };
 
-        evt.attach('mouseover', thumb, (e, src) => {
+        evt.attach('mouseover', thumb.parentNode, (e) => 
+        {
+            // const src = thumb
+            // console.log('mouseenter')
             if (curData.status !== 0) {
                 onThumbLeave();
             }
 
-            curIdx = src.id;
-            curThumb = src;
+            curIdx = idx;
+            curThumb = thumb;
 
-            onThumbEnter(src);
+            onThumbEnter(curThumb);
 
             setThumbData(curThumb, curData);
 
@@ -539,16 +553,16 @@ export default function (evt, options) {
                     y: pos.y
                 });
             }
-        }, false);
-
-        evt.attach('mousemove', thumb.parentNode, (e, src) => {
+        }, true);
+        evt.attach('mousemove', thumb.parentNode, () => {
             isOverThumb = 1;
-        });
+        }, true);
 
         evt.attach('mouseout', thumb.parentNode, () => {
+            // console.log('mouseleave')
             isOverThumb = 0;
-            onThumbLeave()
-        })
+            onThumbLeave();
+        }, true)
 
         evt.attach('load', thumbObj, () => {
             data[idx].status = 1;
@@ -578,6 +592,10 @@ export default function (evt, options) {
                 data[idx].largeUrl = largeUrl
             }
         })
+        this.handleResize = ()=>{
+            setThumbData(thumb, data[idx]);
+            updateLensOnLoad(idx, thumb, largeObj, largeWrapper);
+        }
     };
     const bindDocumentMouseMove = e => {
         requestAnimationFrame(()=>{
@@ -596,11 +614,24 @@ export default function (evt, options) {
 
     this.destory = ()=>{
         evt.detach('mousemove', document, bindDocumentMouseMove)
+        evt.detach('resize', window, bindWindowResize);
+        evt.detach('scroll', window, bindWindowScroll);
     }
 
-    // evt.attach('scroll', window, () => {
-    //     if (curThumb !== null) {
-    //         setThumbData(curThumb, curData);
-    //     }
-    // });
+    const bindWindowResize = () => {
+        requestAnimationFrame(()=>{
+            this.handleResize && this.handleResize()
+        })
+    }
+
+    evt.attach('resize', window, bindWindowResize);
+
+    const bindWindowScroll = () => {
+        requestAnimationFrame(()=>{
+            if (curThumb !== null) {
+                setThumbData(curThumb, curData);
+            }
+        })
+    }
+    evt.attach('scroll', window, bindWindowScroll);
 };

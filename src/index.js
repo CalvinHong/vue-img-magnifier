@@ -5,9 +5,9 @@ let lastPreviewId=0
 export default {
   install(Vue, options={}) {
     const opts = Object.assign({
-      autoSize: 2,
       width: 0,
-      height: 0
+      height: 0,
+      zoom: 3
     }, options)
     Vue.directive('magnifier', {
       inserted: function (el, binding, vnode) {
@@ -21,14 +21,15 @@ export default {
             }
             const isLoaded = $img.complete && $img.naturalHeight !== 0
             let $preview
-            const {width:w=0,height:h=0, autoSize=2} = Object.assign({}, opts, binding.value || {})
-            const adjustPreview = ()=>{
+            const {width:w=0,height:h=0} = Object.assign({}, opts, binding.value || {})
+            vnode.context.__magifier = {}
+            vnode.context.__magifier.adjustPreview = ()=>{
               const {width, height} = $img.getBoundingClientRect()
               let pW=w
               let pH=h
               if(!w && !h) {
-                pW = width * autoSize
-                pH = height * autoSize
+                pW = width
+                pH = height
               }
               if(w && !h) {
                 pH =  height/width * pW
@@ -44,8 +45,10 @@ export default {
               $preview.id = `magnifier_preview_${lastPreviewId++}`
               $preview.className = 'magnifier-preview'
               el.appendChild($preview)
-              adjustPreview()
-              vnode.context.$magifier = new Magnifier(new Event())
+              vnode.context.__magifier.adjustPreview()
+              vnode.context.$magifier = new Magnifier(new Event(), {
+                zoom: opts.zoom
+              })
               vnode.context.$magifier.attach({
                 thumb: `#${$img.id}`,
                 largeWrapper: $preview.id
@@ -58,15 +61,18 @@ export default {
               $img.addEventListener('load', attach)
               $img.addEventListener('load', () => {
                 if($preview) {
-                  adjustPreview()
+                  vnode.context.__magifier.adjustPreview()
                 }
               })
             }
+            window.addEventListener('resize', vnode.context.__magifier.adjustPreview)
           }
           
       },
       unbind(el, binding, vnode){
         vnode.context.$magifier && vnode.context.$magifier.destory()
+        window.removeEventListener('resize', vnode.context.__magifier.adjustPreview)
+
       }
     })
   }
